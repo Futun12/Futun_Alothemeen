@@ -5,10 +5,10 @@
 ## Lab 1 — Tokenizer audit
 | Tokenizer | AR fertility | EN fertility | AR p95 len | EN p95 len | AR UNK rate |
 |---|---:|---:|---:|---:|---:|
-| mBERT | | | | | |
-| XLM-R | | | | | |
-| CAMeLBERT | | | | | |
-| DistilBERT | | | | | |
+| mBERT | 2.153 | 1.510 | 27.0 | 25.0 | 0.0045 |
+| XLM-R | 1.672 | 1.434 | 21.0 | 23.0 | 0.0000 |
+| CAMeLBERT | 1.405 | 2.705 | 20.0 | 38.0 | 0.0080 |
+| DistilBERT | 4.527 | 1.298 | 47.0 | 21.0 | 0.0022 |
 
 - Golden preprocessing: ___ / 25 passed
 - PII masking recall: ___ / 60 = ___%
