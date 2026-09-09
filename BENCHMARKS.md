@@ -12,7 +12,17 @@
 
 - Golden preprocessing: ___ / 25 passed
 - PII masking recall: ___ / 60 = ___%
+## Lab 2 — Attention-Map Diagnostics
 
+| Diagnostic | Finding |
+|---|---|
+| Adjacency-looking head | Head 7 on the Arabic Bayan example had the strongest adjacency pattern, with an average adjacent-token attention score of 0.186913. |
+| [SEP] sink behaviour | Head 2 showed the strongest [SEP] sink behaviour, with average attention to [SEP] of 0.188075 on the Arabic example. |
+| PAD mass with correct mask | 0.000000 |
+| PAD mass without mask | 0.043562 |
+| Pad leakage prevented | Yes |
+
+The correct attention mask reduced the average attention mass assigned to padded positions from 0.043562 to 0.000000.
 ## Lab 3 — Models
 | Model | Metric | Validation | Frozen test | Train time |
 |---|---|---:|---:|---:|

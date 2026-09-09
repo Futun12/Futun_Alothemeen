@@ -1,6 +1,6 @@
 """Lab 1 starter: audit four tokenizer candidates on Bayan AR/EN text."""
-from pathlib import Path
-import pandas as pd
+from pathlib import Path #Path helps us work with file paths
+import pandas as pd #pandas is commonly used to work with tables and datasets.
 import numpy as np
 from transformers import AutoTokenizer
 
@@ -14,13 +14,13 @@ CANDIDATES = {
 
 DATA = Path("data/raw/bayan_feedback.csv")
 
-def fertility(tokenizer, texts) -> float:
+def fertility(tokenizer, texts) -> float: #tokenizer means the tokenizer we are testing,texts means a collection of feedback messages.
     # total subword pieces / whitespace words
     total_pieces = 0
     total_words = 0
 
     for text in texts:
-        words = text.split()
+        words = text.split() #This splits the sentence using spaces.
         pieces = tokenizer.tokenize(text)
 
         total_words += len(words)
@@ -29,7 +29,7 @@ def fertility(tokenizer, texts) -> float:
     if total_words == 0:
         return 0.0
 
-    return total_pieces / total_words
+    return total_pieces / total_words #Lower is usually better because the tokenizer is splitting the text less.
 def unk_rate(tokenizer, texts) -> float:
     total_tokens = 0
     total_unk = 0
@@ -38,7 +38,7 @@ def unk_rate(tokenizer, texts) -> float:
         tokens = tokenizer.tokenize(text)
 
         total_tokens += len(tokens)
-        total_unk += tokens.count(tokenizer.unk_token)
+        total_unk += tokens.count(tokenizer.unk_token) #the tokenizer's unknown-token symbol
 
     if total_tokens == 0:
         return 0.0
@@ -46,17 +46,17 @@ def unk_rate(tokenizer, texts) -> float:
     return total_unk / total_tokens
 
 def main():
-    df = pd.read_csv(DATA)
+    df = pd.read_csv(DATA) #contains your Bayan dataset.
 
     # Find the text column used in this dataset
-    if "raw_text" in df.columns:
+    if "raw_text" in df.columns: #Does the dataset have a column named raw_text?
         text_column = "raw_text"
     elif "text" in df.columns:
         text_column = "text"
     elif "feedback_text" in df.columns:
         text_column = "feedback_text"
     else:
-        raise ValueError(
+        raise ValueError( #stops the program and gives you a clear error.
             f"Could not find the feedback text column. "
             f"Available columns: {df.columns.tolist()}"
         )
@@ -64,9 +64,9 @@ def main():
     # Separate Arabic and English feedback
     ar_texts = (
         df[df["lang"].str.lower() == "ar"][text_column]
-        .dropna()
+        .dropna() #makes sure every value is treated as text.
         .astype(str)
-        .tolist()
+        .tolist() #converts everything into a normal Python list.
     )
 
     en_texts = (
@@ -82,10 +82,10 @@ def main():
     for model_name, short_name in CANDIDATES.items():
         print(f"\nLoading {short_name}...")
 
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name) #This loads the actual tokenizer.
 
         # Fertility
-        ar_fertility = fertility(tokenizer, ar_texts)
+        ar_fertility = fertility(tokenizer, ar_texts) #We call our earlier function It calculates fertility for Arabic
         en_fertility = fertility(tokenizer, en_texts)
         ar_unk_rate = unk_rate(tokenizer, ar_texts)
         # Sequence lengths

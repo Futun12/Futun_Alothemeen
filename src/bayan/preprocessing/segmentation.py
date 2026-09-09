@@ -5,7 +5,7 @@ from bayan.preprocessing.core import preprocess
 def build_pipeline():
     # TODO(Lab 1): build the spaCy segmentation pipeline.
     nlp = spacy.blank("xx")
-    nlp.add_pipe("sentencizer")
+    nlp.add_pipe("sentencizer") #sentencizer:to find sentence boundraries
     return nlp
 
 

@@ -4,15 +4,14 @@ import unicodedata
 
 PREPROC_VERSION = "1.2.0"
 
-
 def normalize(text: str) -> str:
     """Return deterministic Bayan normalisation while preserving task signal."""
     # TODO(Lab 1): implement the course normalisation contract.
-    text = unicodedata.normalize("NFKC", text) 
+    text = unicodedata.normalize("NFKC", text) #بمعنى أنه يجعل تمثيل الحروف والرموز أكثر اتساقًا.
     text = text.replace("\u0640", "") #tatweel 
-    text = re.sub(r"<br\s*/?>", "", text, flags=re.IGNORECASE)
-    text = re.sub(r"(.)\1{2,}", r"\1\1", text)
-    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"<br\s*/?>", "", text, flags=re.IGNORECASE) #html
+    text = re.sub(r"(.)\1{2,}", r"\1\1", text) #triple or more 
+    text = re.sub(r"\s+", " ", text) #white spaces
     text = text.strip()
     return text
 
