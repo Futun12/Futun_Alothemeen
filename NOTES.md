@@ -77,4 +77,8 @@ This demonstrates pad-attention leakage: without a correct attention mask, the m
 
 ## Lab 4 — Dialect audit
 - Distribution:
-- One-sentence implication for MSA-only evaluation:
+  - Gulf: 4800 (66.67%)
+  - MSA: 2400 (33.33%)
+  - Total Arabic feedback rows: 7200
+
+- One-sentence implication for MSA-only evaluation: Evaluating only on Modern Standard Arabic (MSA) would not fully represent Bayan's Arabic data because dialectal language can differ in vocabulary, spelling, and expression across regions.

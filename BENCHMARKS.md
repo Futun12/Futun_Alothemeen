@@ -32,12 +32,23 @@ The correct attention mask reduced the average attention mass assigned to padded
 | NER | entity-F1 | | 1.0000 | |
 | QA | span/null smoke | | | |
 
+## Lab 4 — Clitic Segmentation for NER
+
+| NER configuration | Recall |
+|---|---:|
+| Day-2 NER without clitic segmentation | 1.0000 |
+| NER with clitic segmentation | 1.0000 |
+
+LOCATION recall delta: 0.00 points.
+
+The Day-2 NER model already achieved perfect recall on the evaluation set, so clitic segmentation did not produce an additional recall improvement on this dataset.
 ## Lab 4 — Arabic model bake-off
 | Checkpoint | macro-F1 all | Gulf | MSA | AR fertility |
 |---|---:|---:|---:|---:|
-| multilingual incumbent | | | | |
-| Arabic dialect-aware | | | | |
-| optional third model | | | | |
+| multilingual incumbent | 1.0000 | 1.0000 | 1.0000 | 1.6890 |
+| CAMeLBERT-mix | 1.0000 | 1.0000 | 1.0000 | 1.4164 |
+| CAMeLBERT-DA | 1.0000 | 1.0000 | 1.0000 | 1.4164 |
+CAMeLBERT-DA Gulf macro-F1 improvement vs multilingual incumbent: +0.00 points.
 
 ## Lab 5 — Search
 | Configuration | recall@10 | MRR@10 | p50 latency/query |

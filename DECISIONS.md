@@ -8,11 +8,11 @@
 - Operational trade-off / rationale: XLM-R was chosen because Bayan is a bilingual Arabic-English system. CAMeLBERT performed best for Arabic but was much less efficient for English, while DistilBERT performed best for English but fragmented Arabic heavily. XLM-R provides the strongest balance across both languages and also achieved a 0.0000 Arabic UNK rate in this audit.
 
 ## arabic-model
-- Incumbent:
-- Candidate:
-- All/Gulf/MSA evidence:
-- CI-backed verdict:
-- Segmentation contract:
+- Incumbent: XLM-RoBERTa (`xlm-roberta-base`)
+- Candidate: CAMeLBERT-DA (`CAMeL-Lab/bert-base-arabic-camelbert-da`)
+- All/Gulf/MSA evidence: XLM-RoBERTa and CAMeLBERT-DA both achieved 1.0000 macro-F1 on all, Gulf, and MSA slices. CAMeLBERT-DA had lower Arabic fertility (1.4164) than XLM-RoBERTa (1.6890).
+- CI-backed verdict: CAMeLBERT-DA is selected as the Arabic dialect-aware model. No Gulf macro-F1 improvement was observed because the incumbent already achieved 1.0000.
+- Segmentation contract: Use the CAMeL Tools ATB clitic segmentation path consistently for Arabic NER training and evaluation.
 
 ## search-min-score
 - Threshold:

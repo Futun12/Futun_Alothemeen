@@ -23,7 +23,7 @@ from bayan.models.ner import align_labels
 
 
 CHECKPOINT = "xlm-roberta-base"
-DATA_PATH = "data/models/bayan_ner.conll"
+DATA_PATH = "data/models/bayan_ner_segmented.conll"
 
 
 def parse_args():
