@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 from datasets import Dataset
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
@@ -22,27 +22,41 @@ CHECKPOINT = "xlm-roberta-base"
 
 def parse_args():
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
         "--output-dir",
         default="artifacts/topic_classifier",
         help="Where to save the trained classifier artefact.",
     )
+
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load grouped dataset.
+    # --------------------------------------------------
+    # 1. Load the grouped dataset from Lab 3A Step 2
+    # --------------------------------------------------
+
     ds = build_topic_dataset()
 
     train_df = ds["train"]
     validation_df = ds["validation"]
     test_df = ds["test"]
 
-    # Create label mapping.
+    print("Dataset sizes:")
+    print("Train:", len(train_df))
+    print("Validation:", len(validation_df))
+    print("Test:", len(test_df))
+
+    # --------------------------------------------------
+    # 2. Create topic label mappings
+    # --------------------------------------------------
+
     labels = sorted(train_df["topic"].unique())
 
     label2id = {
@@ -55,19 +69,19 @@ def main():
         for label, i in label2id.items()
     }
 
-    print("Labels:")
+    print("\nLabels:")
     print(labels)
 
-    print("\nDataset sizes:")
-    print("Train:", len(train_df))
-    print("Validation:", len(validation_df))
-    print("Test:", len(test_df))
+    # --------------------------------------------------
+    # 3. Prepare Hugging Face datasets
+    # --------------------------------------------------
 
-    # Convert topic names to numeric labels.
     def prepare_dataframe(df):
-        df = df[["text", "topic"]].copy()
-        df["label"] = df["topic"].map(label2id)
-        return df[["text", "label"]]
+        prepared = df[["text", "topic"]].copy()
+
+        prepared["label"] = prepared["topic"].map(label2id)
+
+        return prepared[["text", "label"]]
 
     train_dataset = Dataset.from_pandas(
         prepare_dataframe(train_df),
@@ -84,8 +98,16 @@ def main():
         preserve_index=False,
     )
 
-    # Lab 1 checkpoint decision.
-    tokenizer = AutoTokenizer.from_pretrained(CHECKPOINT)
+    # --------------------------------------------------
+    # 4. Load Lab 1 tokenizer/checkpoint decision
+    # --------------------------------------------------
+
+    print("\nLoading checkpoint:")
+    print(CHECKPOINT)
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        CHECKPOINT
+    )
 
     model = AutoModelForSequenceClassification.from_pretrained(
         CHECKPOINT,
@@ -93,6 +115,10 @@ def main():
         label2id=label2id,
         id2label=id2label,
     )
+
+    # --------------------------------------------------
+    # 5. Tokenize
+    # --------------------------------------------------
 
     def tokenize(batch):
         return tokenizer(
@@ -120,21 +146,37 @@ def main():
         tokenizer=tokenizer
     )
 
+    # --------------------------------------------------
+    # 6. Evaluation metrics
+    # --------------------------------------------------
+
     def compute_metrics(eval_pred):
-        logits, labels_true = eval_pred
-        predictions = np.argmax(logits, axis=-1)
+        logits, true_labels = eval_pred
+
+        predictions = np.argmax(
+            logits,
+            axis=-1,
+        )
+
+        accuracy = accuracy_score(
+            true_labels,
+            predictions,
+        )
+
+        macro_f1 = f1_score(
+            true_labels,
+            predictions,
+            average="macro",
+        )
 
         return {
-            "accuracy": accuracy_score(
-                labels_true,
-                predictions,
-            ),
-            "macro_f1": f1_score(
-                labels_true,
-                predictions,
-                average="macro",
-            ),
+            "accuracy": accuracy,
+            "macro_f1": macro_f1,
         }
+
+    # --------------------------------------------------
+    # 7. Training configuration
+    # --------------------------------------------------
 
     training_args = TrainingArguments(
         output_dir=str(output_dir / "checkpoints"),
@@ -152,37 +194,63 @@ def main():
         report_to="none",
     )
 
+    # --------------------------------------------------
+    # 8. Create Trainer
+    # --------------------------------------------------
+
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=validation_dataset,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
     )
+
+    # --------------------------------------------------
+    # 9. Fine-tune
+    # --------------------------------------------------
 
     print("\nStarting training...")
 
     trainer.train()
 
+    # --------------------------------------------------
+    # 10. Evaluate validation set
+    # --------------------------------------------------
+
     print("\nValidation results:")
+
     validation_results = trainer.evaluate(
         validation_dataset
     )
 
     print(validation_results)
 
+    # --------------------------------------------------
+    # 11. Evaluate frozen test set
+    # --------------------------------------------------
+
     print("\nFrozen test results:")
+
     test_results = trainer.evaluate(
         test_dataset
     )
 
     print(test_results)
 
-    # Save re-runnable artefact.
-    trainer.save_model(str(output_dir))
-    tokenizer.save_pretrained(str(output_dir))
+    # --------------------------------------------------
+    # 12. Save re-runnable artefact
+    # --------------------------------------------------
+
+    trainer.save_model(
+        str(output_dir)
+    )
+
+    tokenizer.save_pretrained(
+        str(output_dir)
+    )
 
     print("\nSaved classifier to:")
     print(output_dir)

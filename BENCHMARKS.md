@@ -24,11 +24,12 @@
 
 The correct attention mask reduced the average attention mass assigned to padded positions from 0.043562 to 0.000000.
 ## Lab 3 — Models
+
 | Model | Metric | Validation | Frozen test | Train time |
 |---|---|---:|---:|---:|
-| TF-IDF + LinearSVC | macro-F1 | | | |
-| Topic classifier | macro-F1 | | | |
-| NER | entity-F1 | | | |
+| TF-IDF + LinearSVC | macro-F1 | 1.0000 | | |
+| Topic classifier | macro-F1 | | 1.0000 | |
+| NER | entity-F1 | | 1.0000 | |
 | QA | span/null smoke | | | |
 
 ## Lab 4 — Arabic model bake-off
